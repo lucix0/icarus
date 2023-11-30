@@ -8,15 +8,40 @@
 
 #include "shader.h"
 #include "camera.h"
+#include "Texture.h"
 
-float points[] = {
-   0.0f,  0.5f,  0.0f,
-   0.5f, -0.5f,  0.0f,
-  -0.5f, -0.5f,  0.0f
+// 24 bytes
+struct Vertex {
+    float x;
+    float y;
+    float z;
+    float u;
+    float v;
+    unsigned int uniform_id;
+};
+
+Vertex points[] = {
+    {  0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 0 },
+    {  0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0 },
+    { -0.5f, -0.5f, 0.0f, 0.5f, 1.0f, 0 },
+
+    {  0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1 },
+    {  0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1 },
+    { -0.5f, -0.5f, 0.0f, 0.5f, 1.0f, 1 },
+
+    {  0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 2 },
+    {  0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 2 },
+    { -0.5f, -0.5f, 0.0f, 0.5f, 1.0f, 2 }
+};
+
+glm::mat4 model_uniforms[] = {
+    glm::mat4(1.0f),
+    glm::mat4(1.0f),
+    glm::mat4(1.0f)
 };
 
 void glErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, GLchar const* message, void const* user_param) {
-    auto const src_str = [source]() {
+    std::string const src_str = [source]() {
         switch (source) {
             case GL_DEBUG_SOURCE_API: return "API";
             case GL_DEBUG_SOURCE_WINDOW_SYSTEM: return "WINDOW SYSTEM";
@@ -27,7 +52,7 @@ void glErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLs
         }
     }();
 
-    auto const type_str = [type]() {
+    std::string const type_str = [type]() {
         switch (type) {
             case GL_DEBUG_TYPE_ERROR: return "ERROR";
             case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: return "DEPRECATED_BEHAVIOR";
@@ -39,7 +64,7 @@ void glErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLs
         }
     }();
 
-    auto const severity_str = [severity]() {
+    std::string const severity_str = [severity]() {
         switch (severity) {
             case GL_DEBUG_SEVERITY_NOTIFICATION: return "NOTIFICATION";
             case GL_DEBUG_SEVERITY_LOW: return "LOW";
@@ -77,21 +102,43 @@ int main() {
 
     unsigned int vertex_buffer;
     glCreateBuffers(1, &vertex_buffer);
-    glNamedBufferData(vertex_buffer, 9 * sizeof(float), &points, GL_STATIC_DRAW);
+    glNamedBufferData(vertex_buffer, 216, &points, GL_STATIC_DRAW);
 
     unsigned int vertex_array;
     glCreateVertexArrays(1, &vertex_array);
-    glVertexArrayVertexBuffer(vertex_array, 0, vertex_buffer, 0, 3 * sizeof(float));
+    glVertexArrayVertexBuffer(vertex_array, 0, vertex_buffer, 0, 24);
 
     glEnableVertexArrayAttrib(vertex_array, 0);
     glVertexArrayAttribFormat(vertex_array, 0, 3, GL_FLOAT, GL_FALSE, 0);
     glVertexArrayAttribBinding(vertex_array, 0, 0);
 
+    glEnableVertexArrayAttrib(vertex_array, 1);
+    glVertexArrayAttribFormat(vertex_array, 1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(float));
+    glVertexArrayAttribBinding(vertex_array, 1, 0);
+
+    glEnableVertexArrayAttrib(vertex_array, 2);
+    glVertexArrayAttribIFormat(vertex_array, 2, 1, GL_UNSIGNED_INT, 5 * sizeof(float));
+    glVertexArrayAttribBinding(vertex_array, 2, 0);
+
     glBindVertexArray(vertex_array);
+
+    model_uniforms[0] = glm::translate(model_uniforms[0], { 0.0f, 1.0f, 0.0f });
+    model_uniforms[1] = glm::translate(model_uniforms[0], { 0.0f, -1.0f, 0.0f });
+    model_uniforms[2] = glm::translate(model_uniforms[0], { -1.0f, 1.0f, 0.0f });
+
+    unsigned int modelUbo;
+    glCreateBuffers(1, &modelUbo);
+    glNamedBufferData(modelUbo, 192, nullptr, GL_STATIC_DRAW);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, modelUbo);
+    glNamedBufferSubData(modelUbo, 0, 192, &model_uniforms);
 
     Camera cam(0.0f, 0.0f, 3.0f, 0.0f, 1.0f, 0.0f, 0.0f, 45.0f);
     glm::mat4 proj = glm::perspective(glm::radians(90.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-    glm::mat4 model = glm::mat4(1.0f);
+
+    Texture test_texture;
+    test_texture.load_from_file("resources/container.jpg");
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, test_texture.get_handle());
 
     bool shouldQuit = false;
     while (!shouldQuit) {
@@ -108,9 +155,6 @@ int main() {
 
         cam.process_keyboard(BACKWARD, 0.01f);
 
-        int model_loc = glGetUniformLocation(test_shader.get_handle(), "model");
-        glUniformMatrix4fv(model_loc, 1, false, glm::value_ptr(model));
-
         int proj_loc = glGetUniformLocation(test_shader.get_handle(), "proj");
         glUniformMatrix4fv(proj_loc, 1, false, glm::value_ptr(proj));
 
@@ -119,7 +163,9 @@ int main() {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        int count[3] = { 3, 3, 3 };
+        int first[3] = { 0, 3, 6 };
+        glMultiDrawArrays(GL_TRIANGLES, first, count, 3);
 
         window.display();
     }
