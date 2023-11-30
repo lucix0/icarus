@@ -99,7 +99,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-main-d.lib;sfml-system-d.lib;sfml-window-d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-main-d.lib;sfml-system-d.lib;sfml-window-d.lib;opengl32.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y $(SolutionDir)\thirdparty\d\* $(OutDir)</Command>
@@ -122,7 +122,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-main.lib;sfml-system.lib;sfml-window.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-main.lib;sfml-system.lib;sfml-window.lib;opengl32.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y $(SolutionDir)\thirdparty\r\* $(OutDir)</Command>
@@ -141,7 +141,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-main-d.lib;sfml-system-d.lib;sfml-window-d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-main-d.lib;sfml-system-d.lib;sfml-window-d.lib;opengl32.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y $(SolutionDir)\thirdparty\d\* $(OutDir)</Command>
@@ -164,7 +164,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-main.lib;sfml-system.lib;sfml-window.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-main.lib;sfml-system.lib;sfml-window.lib;opengl32.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y $(SolutionDir)\thirdparty\r\* $(OutDir)</Command>
@@ -327,15 +327,27 @@
     <None Include="extinclude\SFML\System\Utf.inl" />
     <None Include="extinclude\SFML\System\Vector2.inl" />
     <None Include="extinclude\SFML\System\Vector3.inl" />
+    <None Include="lib\Debug\SFML\sfml-system-d-2.dll" />
+    <None Include="lib\Debug\SFML\sfml-window-d-2.dll" />
+    <None Include="lib\Release\SFML\sfml-system-2.dll" />
+    <None Include="lib\Release\SFML\sfml-window-2.dll" />
     <None Include="LICENSE" />
     <None Include="shaders\basic_fragment.glsl" />
     <None Include="shaders\basic_vertex.glsl" />
-    <None Include="thirdparty\r\sfml-system-2.dll" />
+    <None Include="thirdparty\assimp-vc143-mt.dll" />
+    <None Include="thirdparty\assimp-vc143-mtd.dll" />
     <None Include="thirdparty\d\sfml-system-d-2.dll" />
-    <None Include="thirdparty\r\sfml-window-2.dll" />
     <None Include="thirdparty\d\sfml-window-d-2.dll" />
+    <None Include="thirdparty\r\sfml-system-2.dll" />
+    <None Include="thirdparty\r\sfml-window-2.dll" />
+    <None Include="thirdparty\sfml-system-2.dll" />
+    <None Include="thirdparty\sfml-system-d-2.dll" />
+    <None Include="thirdparty\sfml-window-2.dll" />
+    <None Include="thirdparty\sfml-window-d-2.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Library Include="lib\assimp-vc143-mt.lib" />
+    <Library Include="lib\assimp-vc143-mtd.lib" />
     <Library Include="lib\sfml-main-d.lib" />
     <Library Include="lib\sfml-main.lib" />
     <Library Include="lib\sfml-system-d.lib" />
@@ -344,6 +356,7 @@
     <Library Include="lib\sfml-window.lib" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="extinclude\glad\glad.h" />
     <ClInclude Include="extinclude\glm\common.hpp" />
     <ClInclude Include="extinclude\glm\detail\compute_common.hpp" />
     <ClInclude Include="extinclude\glm\detail\compute_vector_relational.hpp" />
@@ -626,6 +639,8 @@
     <ClInclude Include="extinclude\glm\vec3.hpp" />
     <ClInclude Include="extinclude\glm\vec4.hpp" />
     <ClInclude Include="extinclude\glm\vector_relational.hpp" />
+    <ClInclude Include="extinclude\json\json.hpp" />
+    <ClInclude Include="extinclude\KHR\khrplatform.h" />
     <ClInclude Include="extinclude\SFML\Audio.hpp" />
     <ClInclude Include="extinclude\SFML\Audio\AlResource.hpp" />
     <ClInclude Include="extinclude\SFML\Audio\Export.hpp" />
@@ -726,6 +741,7 @@
     <ClInclude Include="extinclude\SFML\Window\WindowBase.hpp" />
     <ClInclude Include="extinclude\SFML\Window\WindowHandle.hpp" />
     <ClInclude Include="extinclude\SFML\Window\WindowStyle.hpp" />
+    <ClInclude Include="extinclude\stb_image\stb_image.h" />
     <ClInclude Include="include\camera.h" />
     <ClInclude Include="include\file_io.h" />
     <ClInclude Include="include\shader.h" />
