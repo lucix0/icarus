@@ -1,2 +1,2 @@
 #define STB_IMAGE_IMPLEMENTATION
-#include "engine/stb_image.h"
+#include "icarus/stb_image.h"
